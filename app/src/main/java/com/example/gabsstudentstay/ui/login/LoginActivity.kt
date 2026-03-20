@@ -1,6 +1,7 @@
 package com.example.gabsstudentstay.ui.login
 
 import android.app.Activity
+import android.content.Intent
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -11,11 +12,13 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import com.example.gabsstudentstay.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
 
 import com.example.gabsstudentstay.R
+import com.example.gabsstudentstay.RegisterActivity
 import com.google.firebase.Firebase
 
 class LoginActivity : AppCompatActivity() {
@@ -26,6 +29,8 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val registerText = findViewById<TextView>(R.id.registerText)
 
         //Used to connect the app to Firebase Authentication
         auth = FirebaseAuth.getInstance()
@@ -70,6 +75,10 @@ class LoginActivity : AppCompatActivity() {
             //Complete and destroy login activity once successful
             finish()
         })
+
+        registerText.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
+        }
 
         username.afterTextChanged {
             loginViewModel.loginDataChanged(
