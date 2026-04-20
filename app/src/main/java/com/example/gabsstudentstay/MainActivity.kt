@@ -3,6 +3,9 @@ package com.example.gabsstudentstay
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
 class MainActivity : ComponentActivity() {
     private val viewModel = AuthViewModel()
@@ -12,11 +15,30 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val isLoggedIn = viewModel.isLoggedIn.value
+            val navController = rememberNavController()
 
-            if (isLoggedIn){
-                AddListingScreen(viewModel)
-            }else {
-                AuthScreen(authViewModel = viewModel)
+            NavHost(
+                navController = navController,
+                startDestination = if (isLoggedIn) Screen.Listings.route else Screen.Auth.route
+            ) {
+                composable (Screen.Auth.route) {
+                    AuthScreen(authViewModel = viewModel)
+
+                    //Navigate after login
+                    if(viewModel.isLoggedIn.value) {
+                        navController.navigate(Screen.Listings.route) {
+                            popUpTo(Screen.Auth.route) {inclusive = true}
+                        }
+                    }
+                }
+
+                composable(Screen.Listings.route) {
+                    ListingsScreen(viewModel, navController)
+                }
+
+                composable(Screen.AddListing.route) {
+                    AddListingScreen(viewModel, navController)
+                }
             }
         }
     }

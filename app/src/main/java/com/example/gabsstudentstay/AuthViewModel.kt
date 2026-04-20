@@ -17,6 +17,9 @@ class AuthViewModel : ViewModel() {
     private val _authState = mutableStateOf("")
     val authState: State<String> = _authState
 
+    private val _listings = mutableStateOf<List<Listing>>(emptyList())
+    val listings: State<List<Listing>> = _listings
+
     fun register(email: String, password: String){
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
             if (it.isSuccessful) {
@@ -77,6 +80,15 @@ class AuthViewModel : ViewModel() {
             _authState.value = "Listing added"
         } .addOnFailureListener {
             _authState.value = "${it.message}"
+        }
+    }
+
+    fun fetchListings() {
+        db.collection("listings").get().addOnSuccessListener { result ->
+            val list = result.documents.mapNotNull {
+                it.toObject(Listing::class.java)
+            }
+            _listings.value = list
         }
     }
 }
